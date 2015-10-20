@@ -117,16 +117,10 @@ angular.module('angularResizable', [])
                     scope.$emit('angular-resizable.resizeStart', info);
                     scope.$apply();
                 };
-                var onBegin = function(e) {
+                var onBegin = function(e, direction) {
                     var disabled = (scope.rDisabled === 'true');
                     if (!disabled) {
                         dragStart(e, direction);
-                    }
-                };
-                var onMouseDown = function(e) {
-                    if (e.which === 1) {
-                        // left mouse click
-                        onBegin(e);
                     }
                 };
                 dir.forEach(function (direction) {
@@ -137,9 +131,17 @@ angular.module('angularResizable', [])
                     grabber.innerHTML = inner;
                     element[0].appendChild(grabber);
                     grabber.ondragstart = function() { return false; };
-
-                    grabber.addEventListener('touchstart', onBegin, false);
-                    grabber.addEventListener('mousedown', onMouseDown, false);
+                    
+                    grabber.addEventListener('touchstart', function(e) {
+                        onBegin(e, direction);
+                    }, false);
+                    
+                    grabber.addEventListener('mousedown',  function(e) {
+                        if (e.which === 1) {
+                            // left mouse click
+                            onBegin(e, direction);
+                        }
+                    }, false);
                 });
             }
         };
