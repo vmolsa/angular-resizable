@@ -102,6 +102,8 @@ angular.module('angularResizable', [])
                     //prevent transition while dragging
                     element.addClass('no-transition');
 
+                    document.addEventListener('touchend', dragEnd, false);
+                    document.addEventListener('touchmove', dragging, false);
                     document.addEventListener('mouseup', dragEnd, false);
                     document.addEventListener('mousemove', dragging, false);
 
@@ -115,6 +117,13 @@ angular.module('angularResizable', [])
                     scope.$emit('angular-resizable.resizeStart', info);
                     scope.$apply();
                 };
+                var onBegin = function(e) {
+                    var disabled = (scope.rDisabled === 'true');
+                    if (!disabled && e.which === 1) {
+                        // left mouse click
+                        dragStart(e, direction);
+                    }
+                };
 
                 dir.forEach(function (direction) {
                     var grabber = document.createElement('div');
@@ -124,13 +133,9 @@ angular.module('angularResizable', [])
                     grabber.innerHTML = inner;
                     element[0].appendChild(grabber);
                     grabber.ondragstart = function() { return false; };
-                    grabber.addEventListener('mousedown', function(e) {
-                        var disabled = (scope.rDisabled === 'true');
-                        if (!disabled && e.which === 1) {
-                            // left mouse click
-                            dragStart(e, direction);
-                        }
-                    }, false);
+
+                    grabber.addEventListener('touchstart', onBegin, false);
+                    grabber.addEventListener('mousedown', onBegin, false);
                 });
             }
         };
