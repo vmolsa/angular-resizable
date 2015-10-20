@@ -119,12 +119,16 @@ angular.module('angularResizable', [])
                 };
                 var onBegin = function(e) {
                     var disabled = (scope.rDisabled === 'true');
-                    if (!disabled && e.which === 1) {
-                        // left mouse click
+                    if (!disabled) {
                         dragStart(e, direction);
                     }
                 };
-
+                var onMouseDown = function(e) {
+                    if (e.which === 1) {
+                        // left mouse click
+                        onBegin(e);
+                    }
+                };
                 dir.forEach(function (direction) {
                     var grabber = document.createElement('div');
 
@@ -135,7 +139,7 @@ angular.module('angularResizable', [])
                     grabber.ondragstart = function() { return false; };
 
                     grabber.addEventListener('touchstart', onBegin, false);
-                    grabber.addEventListener('mousedown', onBegin, false);
+                    grabber.addEventListener('mousedown', onMouseDown, false);
                 });
             }
         };
